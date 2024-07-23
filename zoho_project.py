@@ -34,6 +34,36 @@ class ManagementSystem():
         self.data.commit()
         return "++++++++++++++++++++++++DATA STORED+++++++++++++++++++++++++++++++++++"
     
+    def update(self,search,value,update_col,val):
+        if search=="name" or search=="department" or search=="gender" or search=="location" :
+            col=f"{search} = '{value}'"
+            self.db.execute(f"SELECT * FROM employee WHERE {col}")
+            print("BEFORE UPDATE : ",self.db.fetchall())
+            for i in range(0,len(update_col)):
+                if update_col[i]=="name" or update_col[i]=="department" or update_col[i]=="gender" or update_col[i]=="location" :
+                    change=f"{update_col[i]} = '{val[i]}'"
+                    self.db.execute(f"UPDATE employee SET {change} WHERE {col}")
+                    self.db.execute(f"SELECT * FROM employee WHERE {col}")
+                else:
+                    change=f"{update_col[i]} = {val[i]}"
+                    self.db.execute(f"UPDATE employee SET {change} WHERE {col}")
+                    self.db.execute(f"SELECT * FROM employee WHERE {col}")
+        else:
+            col=f"{search} = {value}"
+            self.db.execute(f"SELECT * FROM employee WHERE {col}")
+            print("BEFORE UPDATE : ",self.db.fetchall())
+            if update_col[i]=="name" or update_col[i]=="department" or update_col[i]=="gender" or update_col[i]=="location" :
+                    change=f"{update_col[i]} = '{val[i]}'"
+                    self.db.execute(f"UPDATE employee SET {change} WHERE {col}")
+                    self.db.execute(f"SELECT * FROM employee WHERE {col}")
+            else:
+                change=f"{update_col[i]} = {val[i]}"
+                self.db.execute(f"UPDATE employee SET {change} WHERE {col}")
+                self.db.execute(f"SELECT * FROM employee WHERE {col}")
+        
+        return self.db.fetchall()
+
+    
     def display(self,*agrs):
         
         if agrs[0]=="name" or agrs[0]=="department" or agrs[0]=="gender" or agrs[0]=="location" :
@@ -42,14 +72,25 @@ class ManagementSystem():
         else:
             col=f"{agrs[0]} = {agrs[1]}"
             self.db.execute(f"SELECT * FROM employee WHERE {col}")
-        return list(self.db.fetchall())
+        return "EMPLOYEE DATA DELETED"
+    
+    def delete(self,search,value):
+        if search=="name" or search=="department" or search=="gender" or search=="location" :
+            col=f"{search} = '{value}'"
+            self.db.execute(f"DELETE FROM employee WHERE {col}")
+        else:
+            col=f"{search} = {value}"
+            self.db.execute(f"DELETE FROM employee WHERE {col}")
+        return "EMPLOYEE DATA DELETED"
+    
+
 
 
 
 
 empl=ManagementSystem()
-print("""__________________________Welcome___________________________""")  
-print("""_________________CHOICE ANY OPTION FROM 1-5___________________""")
+print("""__________________________Welcome__________________________""")  
+print("""_________________CHOICE ANY OPTION FROM 1-5_________________""")
 print("1.ADD NEW EMPLOYEE DATA")
 print("2.UPDATE EXIST EMPLOYEE DATA")
 print("3.DISPLAY EMPLOYEE DETIALS")
@@ -71,7 +112,22 @@ while choice!=5:
         loc=str(input("ENTER EMPLOYEE LOCATION :"))
         print(empl.new_entry(id,emp_name,dep,age,gen,loc))
 
-    
+    if choice == 2:
+        arr=["ID","name","department","age","gender","location"]
+        print(f"SEARCH EMPLOYEE WITH {arr}")
+        arr=["name","department","age","gender","location"]
+        sear=str(input("ENTER ACCORDING TO WHICH SEARCH VALUE AS GIVEN LIST ABOVE : "))
+        value=str(input(f"ENTER EMPLOYEE {sear} : "))
+        up=list(map(str,input(f"CHOICE COLUMNS TO UPDATE FROM THE LIST {arr}  : ").split()))
+        
+        val=[]
+        for i in range(0,len(up)):
+            a=input("ENTER THE VALUES AS PRE MENTIONED NUMBER OF COLUMNS : ")
+            val.append(a)
+        
+        print(empl.update(sear,value,up,val))
+
+        print("*************************SUCESSFUL UPDATED*************************")
 
     if choice == 3:
         arr=["ID","name","department","age","gender","location"]
@@ -80,6 +136,14 @@ while choice!=5:
         value=str(input(f"ENTER EMPLOYEE {sear} : "))
         for i in range(0,6):
             print("_________________",arr[i],":",empl.display(sear,value)[0][i],"_________________")
+
+    if choice == 4:
+        arr=["ID","name","department","age","gender","location"]
+        print(f"SEARCH EMPLOYEE WITH {arr}")
+        sear=str(input("ENTER VALUE TO DELETE AS GIVEN LIST ABOVE : "))
+        value=str(input(f"ENTER EMPLOYEE {sear} TO DELETE : "))
+
+        print(empl.delete(sear,value))
 
 
     if choice > 5 or choice <= 0:
